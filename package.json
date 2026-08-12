@@ -1,0 +1,8 @@
+{
+  "name": "fundguard-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo: Next.js web, NestJS API, Expo mobile",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@10.34.5"
+}
