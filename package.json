@@ -4,5 +4,14 @@
   "private": true,
   "description": "Monorepo: Next.js web, NestJS API, Expo mobile",
   "license": "UNLICENSED",
-  "packageManager": "pnpm@10.34.5"
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "2.10.9"
+  }
 }
