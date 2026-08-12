@@ -1,7 +1,5 @@
-{
-  "name": "@repo/config",
-  "version": "1.0.0",
-  "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts"
+export interface User {
+  id: string;
+  email: string;
+  name: string;
 }

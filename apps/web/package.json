@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/shared-types": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "next": "16.3.0",
@@ -16,6 +17,8 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.6",
+    "@next/eslint-plugin-next": "^16.3.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
