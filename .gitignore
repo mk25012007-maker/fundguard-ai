@@ -1,9 +1,18 @@
 node_modules
 .env
 .env.local
+.env.*
 dist
 build
 .turbo
 .next
 .expo
 *.log
+
+# FundGuard environment files
+apps/api.env
+apps/mobile.env
+apps/web.env
+
+# Keep example environment templates
+!*.env.example

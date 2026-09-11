@@ -6,9 +6,367 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
+model ai_insights {
+  id               String            @id
+  userId           String
+  tradingAccountId String?
+  type             InsightType
+  severity         InsightSeverity   @default(INFO)
+  title            String
+  summary          String
+  detail           String?
+  modelVersion     String
+  isRead           Boolean           @default(false)
+  isDismissed      Boolean           @default(false)
+  generatedAt      DateTime          @default(now())
+  trading_accounts trading_accounts? @relation(fields: [tradingAccountId], references: [id], onDelete: Cascade)
+  users            users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifications    notifications[]
+
+  @@index([isRead])
+  @@index([severity])
+  @@index([tradingAccountId])
+  @@index([userId])
+}
+
+model audit_logs {
+  id         String      @id
+  userId     String?
+  action     AuditAction
+  entityType String?
+  entityId   String?
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime    @default(now())
+  users      users?      @relation(fields: [userId], references: [id])
+
+  @@index([action])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model notifications {
+  id              String              @id
+  userId          String
+  type            NotificationType
+  channel         NotificationChannel @default(IN_APP)
+  title           String
+  body            String
+  linkedInsightId String?
+  isRead          Boolean             @default(false)
+  sentAt          DateTime?
+  createdAt       DateTime            @default(now())
+  ai_insights     ai_insights?        @relation(fields: [linkedInsightId], references: [id])
+  users           users               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([linkedInsightId])
+  @@index([userId])
+}
+
+model reports {
+  id               String            @id
+  userId           String
+  tradingAccountId String?
+  type             ReportType
+  format           ReportFormat      @default(PDF)
+  status           ReportStatus      @default(PENDING)
+  periodStart      DateTime
+  periodEnd        DateTime
+  fileUrl          String?
+  errorMessage     String?
+  requestedAt      DateTime          @default(now())
+  completedAt      DateTime?
+  trading_accounts trading_accounts? @relation(fields: [tradingAccountId], references: [id], onDelete: Cascade)
+  users            users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tradingAccountId])
+  @@index([userId])
+}
+
+model risk_rules {
+  id               String            @id
+  userId           String
+  tradingAccountId String?
+  name             String
+  type             RiskRuleType
+  action           RiskRuleAction    @default(WARN)
+  thresholdValue   Decimal           @db.Decimal(18, 4)
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime
+  trading_accounts trading_accounts? @relation(fields: [tradingAccountId], references: [id], onDelete: Cascade)
+  users            users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
+  @@index([tradingAccountId])
+  @@index([type])
+  @@index([userId])
+}
+
+model subscriptions {
+  id                     String             @id
+  userId                 String             @unique
+  tier                   PlanTier           @default(FREE)
+  status                 SubscriptionStatus @default(ACTIVE)
+  externalCustomerId     String?
+  externalSubscriptionId String?
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  cancelAtPeriodEnd      Boolean            @default(false)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime
+  users                  users              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model trades {
+  id               String           @id
+  tradingAccountId String
+  symbol           String
+  assetClass       AssetClass
+  side             TradeSide
+  status           TradeStatus      @default(PENDING)
+  quantity         Decimal          @db.Decimal(18, 8)
+  price            Decimal          @db.Decimal(18, 8)
+  totalValue       Decimal          @db.Decimal(18, 2)
+  fees             Decimal          @default(0) @db.Decimal(18, 2)
+  externalOrderId  String?
+  executedAt       DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime
+  trading_accounts trading_accounts @relation(fields: [tradingAccountId], references: [id], onDelete: Cascade)
+
+  @@index([executedAt])
+  @@index([status])
+  @@index([symbol])
+  @@index([tradingAccountId])
+}
+
+model trading_accounts {
+  id              String        @id
+  userId          String
+  broker          BrokerType
+  accountLabel    String
+  externalId      String
+  status          AccountStatus @default(ACTIVE)
+  baseCurrency    String        @default("USD")
+  balance         Decimal       @default(0) @db.Decimal(18, 2)
+  apiKeyEncrypted String?
+  connectedAt     DateTime      @default(now())
+  updatedAt       DateTime
+  ai_insights     ai_insights[]
+  reports         reports[]
+  risk_rules      risk_rules[]
+  trades          trades[]
+  users           users         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, broker, externalId])
+  @@index([userId])
+}
+
+model users {
+  id                       String             @id
+  email                    String             @unique
+  passwordHash             String
+  firstName                String
+  lastName                 String
+  role                     UserRole           @default(TRADER)
+  isActive                 Boolean            @default(true)
+  lastLoginAt              DateTime?
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime
+  emailVerificationExpires DateTime?
+  emailVerificationToken   String?            @unique
+  emailVerified            Boolean            @default(false)
+  passwordResetExpires     DateTime?
+  passwordResetToken       String?            @unique
+  ai_insights              ai_insights[]
+  audit_logs               audit_logs[]
+  notifications            notifications[]
+  refreshToken             refreshToken[]
+  reports                  reports[]
+  risk_rules               risk_rules[]
+  subscriptions            subscriptions?
+  trading_accounts         trading_accounts[]
+}
+
+model refreshToken {
   id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
+  userId    String
+  tokenHash String   @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
   createdAt DateTime @default(now())
+  users     users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([isRevoked])
+}
+
+model integration_events {
+  id          String                @id @default(uuid())
+  timestamp   DateTime              @default(now())
+  level       IntegrationEventLevel
+  integration String
+  event       String
+  message     String
+  metadata    Json?
+  createdAt   DateTime              @default(now())
+
+  @@index([integration])
+  @@index([level])
+  @@index([event])
+  @@index([timestamp])
+}
+
+enum AccountStatus {
+  ACTIVE
+  PAUSED
+  DISCONNECTED
+  ERROR
+}
+
+enum AssetClass {
+  EQUITY
+  CRYPTO
+  FOREX
+  OPTION
+  FUTURE
+}
+
+enum AuditAction {
+  USER_LOGIN
+  USER_LOGOUT
+  USER_CREATED
+  USER_UPDATED
+  TRADING_ACCOUNT_CONNECTED
+  TRADING_ACCOUNT_DISCONNECTED
+  TRADE_PLACED
+  TRADE_CANCELLED
+  RISK_RULE_CREATED
+  RISK_RULE_UPDATED
+  RISK_RULE_TRIGGERED
+  SUBSCRIPTION_CHANGED
+  REPORT_GENERATED
+  SETTINGS_CHANGED
+}
+
+enum BrokerType {
+  ALPACA
+  INTERACTIVE_BROKERS
+  BINANCE
+  COINBASE
+  TD_AMERITRADE
+  OTHER
+}
+
+enum InsightSeverity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum InsightType {
+  RISK_WARNING
+  PATTERN_DETECTION
+  PORTFOLIO_SUGGESTION
+  PERFORMANCE_SUMMARY
+  ANOMALY_ALERT
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+  SMS
+}
+
+enum NotificationType {
+  RISK_ALERT
+  AI_INSIGHT
+  TRADE_EXECUTED
+  ACCOUNT_STATUS
+  SYSTEM
+}
+
+enum PlanTier {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum ReportFormat {
+  PDF
+  CSV
+  XLSX
+}
+
+enum ReportStatus {
+  PENDING
+  GENERATING
+  READY
+  FAILED
+}
+
+enum ReportType {
+  PERFORMANCE_SUMMARY
+  TAX_STATEMENT
+  RISK_COMPLIANCE
+  TRADE_HISTORY
+  CUSTOM
+}
+
+enum RiskRuleAction {
+  WARN
+  BLOCK
+  NOTIFY_ONLY
+}
+
+enum RiskRuleType {
+  MAX_POSITION_SIZE
+  MAX_DAILY_TRADES
+  MAX_DAILY_LOSS
+  MAX_DRAWDOWN
+  CONCENTRATION_LIMIT
+  STOP_LOSS_REQUIRED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+enum TradeSide {
+  BUY
+  SELL
+}
+
+enum TradeStatus {
+  PENDING
+  FILLED
+  PARTIALLY_FILLED
+  CANCELLED
+  REJECTED
+}
+
+enum UserRole {
+  ADMIN
+  TRADER
+  VIEWER
+}
+
+enum IntegrationEventLevel {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
 }

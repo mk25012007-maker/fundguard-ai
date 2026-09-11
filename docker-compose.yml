@@ -4,9 +4,9 @@ services:
     container_name: dev-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: devuser
+      POSTGRES_USER: fundguard_user
       POSTGRES_PASSWORD: devpassword
-      POSTGRES_DB: devdb
+      POSTGRES_DB: fundguard_dev
     ports:
       - "5432:5432"
     volumes:
