@@ -1,4 +1,23 @@
-import baseConfig from "@repo/eslint-config/base.js";
-import expoConfig from "eslint-config-expo/flat.js";
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
 
-export default [...expoConfig, ...baseConfig];
+export default [
+  {
+    ignores: ["node_modules/**", ".expo/**", "dist/**", "build/**"],
+  },
+
+  js.configs.recommended,
+
+  ...tseslint.configs.recommended,
+
+  {
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+  },
+];
