@@ -16,3 +16,9 @@ apps/web.env
 
 # Keep example environment templates
 !*.env.example
+
+# Local backups and debug files
+apps/api/ai-service-current.txt
+apps/api/prisma/schema.backup.prisma
+apps/api/prisma/schema_backup.prisma
+fundguard-mobile-debug.zip
