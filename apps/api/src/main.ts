@@ -52,6 +52,7 @@ async function bootstrap() {
       'http://localhost:3003',
       'http://localhost:3004',
       'http://localhost:3005',
+      'https://web-production-77d3a.up.railway.app',
     ],
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
