@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+
 import { Alert } from "@/src/components/Alert";
 import { Button } from "@/src/components/Button";
 import { Card } from "@/src/components/Card";
@@ -11,13 +13,20 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3001")
-      .then((response) => response.text())
+    fetch("http://localhost:3001/")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status}`);
+        }
+
+        return response.json();
+      })
       .then((data) => {
-        setMessage(data);
+        setMessage(data.message ?? "API connected successfully");
         setLoading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error("API connection failed:", error);
         setMessage("API connection failed");
         setLoading(false);
       });
@@ -57,10 +66,7 @@ export default function Home() {
           {loading ? (
             <Status type="loading" message="Connecting to FundGuard API..." />
           ) : (
-            <Alert
-              type={message.includes("Cannot GET") ? "info" : "success"}
-              title="API Connection"
-            >
+            <Alert type="success" title="API Connection">
               {message}
             </Alert>
           )}
@@ -69,7 +75,9 @@ export default function Home() {
         <section className="mt-8 flex gap-3">
           <Button onClick={() => window.location.reload()}>Refresh Status</Button>
 
-          <Button variant="ghost">Dashboard</Button>
+          <Link href="/dashboard">
+            <Button variant="ghost">Dashboard</Button>
+          </Link>
         </section>
       </div>
     </main>

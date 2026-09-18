@@ -1,8 +1,8 @@
-﻿import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import helmet from 'helmet';
+import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
+import helmet from 'helmet';
 import { join } from 'path';
 
 import { AppModule } from './app.module';
@@ -15,7 +15,6 @@ dotenv.config({
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // HTTP security headers
   app.use(
     helmet({
       contentSecurityPolicy: false,
@@ -42,16 +41,23 @@ async function bootstrap() {
     }),
   );
 
-  // Cookie support
   app.use(cookieParser());
 
-  // CORS security
   app.enableCors({
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+    origin: [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
+      'http://localhost:3003',
+      'http://localhost:3004',
+      'http://localhost:3005',
+    ],
     credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  // Request validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -60,10 +66,13 @@ async function bootstrap() {
     }),
   );
 
-  // Global exception handling
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   await app.listen(process.env.PORT ?? 3001);
+
+  console.log(
+    `FundGuard AI API running on http://localhost:${process.env.PORT ?? 3001}`,
+  );
 }
 
-bootstrap();
+void bootstrap();

@@ -1,74 +1,30 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 import { AppController } from './app.controller';
-import { SanitizeInputMiddleware } from './common/middleware/sanitize-input.middleware';
-
-import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TradingAccountsModule } from './trading-accounts/trading-accounts.module';
 import { TradesModule } from './trades/trades.module';
+import { RiskRulesModule } from './risk-rules/risk-rules.module';
 import { AiModule } from './ai/ai.module';
-
-import { MarketDataModule } from './integrations/market-data/market-data.module';
-import { NotificationModule } from './integrations/notifications/notification.module';
-import { WebhookModule } from './integrations/webhooks/webhook.module';
-import { TradingModule } from './integrations/trading/trading.module';
-
-import { IntegrationResilienceModule } from './integrations/resilience/integration-resilience.module';
-import { IntegrationLoggingModule } from './integrations/logging/integration-logging.module';
-import { IntegrationMonitoringModule } from './integrations/monitoring/integration-monitoring.module';
-import { IntegrationConfigurationModule } from './integrations/configuration/integration-configuration.module';
-import { IntegrationDashboardModule } from './integrations/dashboard/integration-dashboard.module';
-import { IntegrationAnalyticsModule } from './integrations/analytics/integration-analytics.module';
+import { AiAnalysisModule } from './ai-analysis/ai-analysis.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
-  controllers: [AppController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      validate: (config) => {
-        const requiredJwtVariables = [
-          'JWT_ACCESS_SECRET',
-          'JWT_REFRESH_SECRET',
-        ];
-
-        for (const variable of requiredJwtVariables) {
-          if (!config[variable]) {
-            throw new Error(
-              `Missing required environment variable: ${variable}`,
-            );
-          }
-        }
-
-        if (config.JWT_ACCESS_SECRET === 'change-this-access-secret') {
-          throw new Error(
-            'JWT_ACCESS_SECRET must be changed from the default value',
-          );
-        }
-
-        if (config.JWT_REFRESH_SECRET === 'change-this-refresh-secret') {
-          throw new Error(
-            'JWT_REFRESH_SECRET must be changed from the default value',
-          );
-        }
-
-        return config;
-      },
     }),
 
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 20,
+        limit: 100,
       },
     ]),
 
@@ -77,20 +33,14 @@ import { IntegrationAnalyticsModule } from './integrations/analytics/integration
     UsersModule,
     TradingAccountsModule,
     TradesModule,
+    RiskRulesModule,
     AiModule,
-
-    MarketDataModule,
-    NotificationModule,
-    WebhookModule,
-    TradingModule,
-
-    IntegrationResilienceModule,
-    IntegrationLoggingModule,
-    IntegrationMonitoringModule,
-    IntegrationConfigurationModule,
-    IntegrationDashboardModule,
-    IntegrationAnalyticsModule,
+    AiAnalysisModule,
+    AnalyticsModule,
+    NotificationsModule,
   ],
+
+  controllers: [AppController],
 
   providers: [
     {
@@ -99,11 +49,4 @@ import { IntegrationAnalyticsModule } from './integrations/analytics/integration
     },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SanitizeInputMiddleware).forRoutes({
-      path: '*',
-      method: RequestMethod.ALL,
-    });
-  }
-}
+export class AppModule {}

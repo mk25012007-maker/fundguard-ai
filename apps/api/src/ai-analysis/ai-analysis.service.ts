@@ -1,0 +1,398 @@
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import OpenAI from 'openai';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class AiAnalysisService {
+  private readonly openai: OpenAI;
+
+  constructor(private readonly prisma: PrismaService) {
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
+      console.warn(
+        'OPENAI_API_KEY is not configured. Local AI fallback will be used.',
+      );
+    }
+
+    this.openai = new OpenAI({
+      apiKey: apiKey || 'not-configured',
+    });
+  }
+
+  async analyzeTrades(userId: string) {
+    try {
+      const trades = await this.prisma.trades.findMany({
+        where: {
+          trading_accounts: {
+            userId,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 50,
+      });
+
+      if (trades.length === 0) {
+        return {
+          success: true,
+          analysisAvailable: false,
+          analysisMode: 'NONE',
+          tradeCount: 0,
+          message: 'No trades available for AI analysis.',
+          analysis: null,
+        };
+      }
+
+      /*
+       * ============================================================
+       * STEP 5.7 - LOCAL AI FALLBACK
+       * ============================================================
+       */
+
+      const totalTrades = trades.length;
+
+      const buyTrades = trades.filter((trade) => trade.side === 'BUY').length;
+
+      const sellTrades = trades.filter((trade) => trade.side === 'SELL').length;
+
+      const filledTrades = trades.filter(
+        (trade) => trade.status === 'FILLED',
+      ).length;
+
+      const pendingTrades = trades.filter(
+        (trade) => trade.status === 'PENDING',
+      ).length;
+
+      const cancelledTrades = trades.filter(
+        (trade) => trade.status === 'CANCELLED',
+      ).length;
+
+      const totalTradeValue = trades.reduce(
+        (sum, trade) => sum + Number(trade.totalValue),
+        0,
+      );
+
+      const totalFees = trades.reduce(
+        (sum, trade) => sum + Number(trade.fees),
+        0,
+      );
+
+      const averageTradeValue =
+        totalTrades > 0 ? totalTradeValue / totalTrades : 0;
+
+      const symbols = Array.from(new Set(trades.map((trade) => trade.symbol)));
+
+      const symbolCounts: Record<string, number> = {};
+
+      for (const trade of trades) {
+        symbolCounts[trade.symbol] = (symbolCounts[trade.symbol] || 0) + 1;
+      }
+
+      const mostTradedSymbol =
+        Object.entries(symbolCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ??
+        null;
+
+      const warnings: string[] = [];
+      const recommendations: string[] = [];
+
+      /*
+       * ============================================================
+       * BEHAVIOUR ANALYSIS
+       * ============================================================
+       */
+
+      let behaviour = 'Trading activity appears limited.';
+
+      if (totalTrades >= 20) {
+        behaviour =
+          'Trading activity is relatively high and should be monitored for overtrading.';
+      } else if (totalTrades >= 10) {
+        behaviour =
+          'Trading activity is moderate. Maintain discipline and avoid unnecessary entries.';
+      } else if (totalTrades >= 3) {
+        behaviour = 'Trading activity is currently moderate-to-low.';
+      }
+
+      /*
+       * ============================================================
+       * BUY / SELL BALANCE
+       * ============================================================
+       */
+
+      if (buyTrades > sellTrades * 2 && totalTrades >= 3) {
+        warnings.push(
+          'BUY activity is significantly higher than SELL activity.',
+        );
+
+        recommendations.push(
+          'Review whether entries are becoming one-sided and confirm the trading plan before opening new positions.',
+        );
+      }
+
+      if (sellTrades > buyTrades * 2 && totalTrades >= 3) {
+        warnings.push(
+          'SELL activity is significantly higher than BUY activity.',
+        );
+
+        recommendations.push(
+          'Review short-side activity and confirm each trade follows the planned setup.',
+        );
+      }
+
+      /*
+       * ============================================================
+       * TRADE FREQUENCY
+       * ============================================================
+       */
+
+      if (totalTrades >= 20) {
+        warnings.push(
+          'High trade count detected in the latest 50 recorded trades.',
+        );
+
+        recommendations.push(
+          'Set a maximum daily trade limit to reduce overtrading risk.',
+        );
+      }
+
+      /*
+       * ============================================================
+       * FEES
+       * ============================================================
+       */
+
+      if (totalFees > 0) {
+        recommendations.push(
+          `Monitor trading fees. ${totalFees.toFixed(
+            2,
+          )} in recorded fees has been generated by the analyzed trades.`,
+        );
+      }
+
+      /*
+       * ============================================================
+       * POSITION / VALUE ANALYSIS
+       * ============================================================
+       */
+
+      if (averageTradeValue > 5000) {
+        warnings.push(
+          'Average trade value is relatively large compared with the current risk-rule configuration.',
+        );
+
+        recommendations.push(
+          'Review position sizing before entering another large trade.',
+        );
+      }
+
+      /*
+       * ============================================================
+       * CONCENTRATION
+       * ============================================================
+       */
+
+      if (mostTradedSymbol && (symbolCounts[mostTradedSymbol] ?? 0) >= 5) {
+        warnings.push(
+          `Trading activity is concentrated in ${mostTradedSymbol}.`,
+        );
+
+        recommendations.push(
+          'Avoid excessive concentration in a single symbol unless it is part of the planned strategy.',
+        );
+      }
+
+      /*
+       * ============================================================
+       * ORDER STATUS
+       * ============================================================
+       */
+
+      if (pendingTrades > 0) {
+        warnings.push(
+          `${pendingTrades} pending trade(s) are currently recorded.`,
+        );
+
+        recommendations.push(
+          'Review pending orders regularly and cancel orders that no longer match the trading plan.',
+        );
+      }
+
+      if (cancelledTrades > 0) {
+        recommendations.push(
+          `${cancelledTrades} cancelled trade(s) were found. Review why those orders were cancelled.`,
+        );
+      }
+
+      /*
+       * ============================================================
+       * RISK ASSESSMENT
+       * ============================================================
+       */
+
+      let riskAssessment =
+        'Current recorded trading activity does not show a major behavioural warning.';
+
+      if (warnings.length >= 3) {
+        riskAssessment =
+          'Multiple behavioural risk signals were detected. Review position sizing, trade frequency, and concentration before continuing.';
+      } else if (warnings.length >= 1) {
+        riskAssessment =
+          'Some behavioural risk signals were detected. Review the warnings before taking additional trades.';
+      }
+
+      /*
+       * ============================================================
+       * SAFE DEFAULT RECOMMENDATIONS
+       * ============================================================
+       */
+
+      if (recommendations.length === 0) {
+        recommendations.push(
+          'Continue following the predefined trading plan and risk rules.',
+        );
+
+        recommendations.push(
+          'Use stop-loss protection whenever appropriate for the strategy.',
+        );
+
+        recommendations.push(
+          'Keep recording complete trade data so FundGuard AI can provide deeper analysis.',
+        );
+      }
+
+      /*
+       * IMPORTANT:
+       * We deliberately do NOT calculate:
+       * - realized P&L
+       * - win rate
+       * - drawdown
+       * - profit factor
+       *
+       * because the current trades table does not contain
+       * sufficient entry/exit/equity-history information.
+       */
+
+      const summary =
+        `Analyzed ${totalTrades} recorded trade(s). ` +
+        `${buyTrades} BUY and ${sellTrades} SELL trade(s) were found. ` +
+        `Total recorded trade value is ${totalTradeValue.toFixed(
+          2,
+        )}, with ${totalFees.toFixed(2)} in recorded fees.`;
+
+      const localAnalysis = {
+        summary,
+        behaviour,
+        riskAssessment,
+        warnings,
+        recommendations,
+        metrics: {
+          totalTrades,
+          buyTrades,
+          sellTrades,
+          filledTrades,
+          pendingTrades,
+          cancelledTrades,
+          totalTradeValue: Number(totalTradeValue.toFixed(2)),
+          totalFees: Number(totalFees.toFixed(2)),
+          averageTradeValue: Number(averageTradeValue.toFixed(2)),
+          symbols,
+          mostTradedSymbol,
+        },
+        dataLimitations: [
+          'Realized P&L is unavailable because trade exit/P&L data is not stored.',
+          'Win rate is unavailable because completed trade outcomes are not stored.',
+          'Historical drawdown is unavailable because equity history is not stored.',
+        ],
+      };
+
+      console.log('========================================');
+      console.log('LOCAL AI ANALYSIS SUCCESS');
+      console.log('Trades analyzed:', totalTrades);
+      console.log('BUY trades:', buyTrades);
+      console.log('SELL trades:', sellTrades);
+      console.log('Warnings:', warnings.length);
+      console.log('Recommendations:', recommendations.length);
+      console.log('========================================');
+
+      /*
+       * ============================================================
+       * OPTIONAL OPENAI ATTEMPT
+       * ============================================================
+       *
+       * We try OpenAI only when an API key exists.
+       * If OpenAI fails because of credits/quota/network/etc.,
+       * we safely return the local analysis instead.
+       */
+
+      if (process.env.OPENAI_API_KEY) {
+        try {
+          const tradeData = trades.map((trade) => ({
+            symbol: trade.symbol,
+            assetClass: trade.assetClass,
+            side: trade.side,
+            status: trade.status,
+            quantity: Number(trade.quantity),
+            price: Number(trade.price),
+            totalValue: Number(trade.totalValue),
+            fees: Number(trade.fees),
+            executedAt: trade.executedAt,
+            createdAt: trade.createdAt,
+          }));
+
+          const response = await this.openai.responses.create({
+            model: process.env.OPENAI_MODEL || 'gpt-5.6-luna',
+
+            instructions:
+              'You are FundGuard AI, a trading risk and behaviour analysis assistant. Analyze the supplied trading activity. Do not invent missing P&L, entry/exit prices, drawdown, or other unavailable data. Return practical risk-focused observations.',
+
+            input: JSON.stringify({
+              task: 'Analyze trader behaviour and risk patterns.',
+              trades: tradeData,
+              localAnalysis,
+            }),
+          });
+
+          console.log('OPENAI ANALYSIS SUCCESSFUL');
+
+          return {
+            success: true,
+            analysisAvailable: true,
+            analysisMode: 'OPENAI',
+            tradeCount: totalTrades,
+            analysis: response.output_text,
+            localAnalysis,
+          };
+        } catch (openaiError: any) {
+          console.warn('OpenAI unavailable. Using local analysis.');
+
+          console.warn('OpenAI error:', openaiError?.message);
+        }
+      }
+
+      /*
+       * ============================================================
+       * LOCAL FALLBACK RESPONSE
+       * ============================================================
+       */
+
+      return {
+        success: true,
+        analysisAvailable: true,
+        analysisMode: 'LOCAL',
+        tradeCount: totalTrades,
+        message: 'FundGuard local AI analysis completed successfully.',
+        analysis: localAnalysis,
+      };
+    } catch (error: any) {
+      console.error('========================================');
+      console.error('AI ANALYSIS BACKEND FAILED');
+      console.error('Error name:', error?.name);
+      console.error('Error message:', error?.message);
+      console.error('========================================');
+
+      throw new InternalServerErrorException('AI analysis backend failed');
+    }
+  }
+}

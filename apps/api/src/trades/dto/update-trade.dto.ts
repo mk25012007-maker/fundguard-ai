@@ -4,36 +4,37 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
   Min,
 } from 'class-validator';
 
 import { AssetClass, TradeSide, TradeStatus } from '@prisma/client';
 
-export class CreateTradeDto {
-  @IsUUID()
-  tradingAccountId!: string;
-
+export class UpdateTradeDto {
+  @IsOptional()
   @IsString()
-  symbol!: string;
+  symbol?: string;
 
+  @IsOptional()
   @IsEnum(AssetClass)
-  assetClass!: AssetClass;
+  assetClass?: AssetClass;
 
+  @IsOptional()
   @IsEnum(TradeSide)
-  side!: TradeSide;
+  side?: TradeSide;
 
   @IsOptional()
   @IsEnum(TradeStatus)
   status?: TradeStatus;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  quantity!: number;
+  quantity?: number;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  price!: number;
+  price?: number;
 
   @IsOptional()
   @IsNumber()

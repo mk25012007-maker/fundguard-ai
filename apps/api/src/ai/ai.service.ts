@@ -1,11 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import OpenAI from 'openai';
-
 import { AnalyzeTradeDto } from './dto/analyze-trade.dto';
 import { TradeAnalysisResponseDto } from './dto/trade-analysis-response.dto';
 import { AnalyzeRiskDto } from './dto/analyze-risk.dto';
 import { RiskAnalysisResponseDto } from './dto/risk-analysis-response.dto';
-import { CoachingDto } from './dto/coaching.dto';
+import { AiCoachingDto } from './dto/ai-coaching.dto';
 import { CoachingResponseDto } from './dto/coaching-response.dto';
 
 @Injectable()
@@ -13,48 +12,28 @@ export class AiService {
   private readonly openai: OpenAI | null;
 
   constructor() {
-    const apiKey = process.env.OPENAI_API_KEY?.trim();
+    const apiKey = process.env.OPENAI_API_KEY;
 
-    if (!apiKey) {
-      console.warn(
-        'OPENAI_API_KEY is not configured. AI features will use fallback responses.',
-      );
-
-      this.openai = null;
-      return;
-    }
-
-    this.openai = new OpenAI({
-      apiKey,
-    });
+    this.openai = apiKey
+      ? new OpenAI({
+          apiKey,
+        })
+      : null;
   }
-
-  // ============================================================
-  // 7.1 - GENERAL AI ASSISTANT
-  // ============================================================
 
   async askAI(message: string): Promise<string> {
     if (!this.openai) {
-      return (
-        'FundGuard AI is running in fallback mode because ' +
-        'OPENAI_API_KEY is not configured. ' +
-        'For risk management, focus on position sizing, stop-losses, ' +
-        'daily loss limits, drawdown and disciplined execution.'
-      );
+      return 'Follow your funded-account rules first. Never risk more than your planned risk per trade, and stop trading when your daily loss limit is reached.';
     }
 
     try {
-      const completion = await this.openai.chat.completions.create({
+      const response = await this.openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
             content:
-              'You are FundGuard AI, an AI trading risk assistant. ' +
-              'Help traders understand trading risk, drawdown, daily loss limits, ' +
-              'position sizing, risk-reward ratios, and disciplined trading decisions. ' +
-              'Do not guarantee profits. Do not encourage irresponsible financial behavior. ' +
-              'Focus on risk management and disciplined decision-making.',
+              'You are FundGuard AI, an AI trading discipline assistant. Focus on risk management, funded-account rules, discipline, and avoiding rule violations. Do not provide guaranteed trading signals.',
           },
           {
             role: 'user',
@@ -62,505 +41,250 @@ export class AiService {
           },
         ],
         temperature: 0.3,
+        max_tokens: 300,
       });
 
       return (
-        completion.choices[0]?.message?.content?.trim() ??
-        'I could not generate an AI response.'
+        response.choices[0]?.message?.content?.trim() ||
+        'Stay within your funded-account rules and protect your risk limits.'
       );
     } catch (error) {
       console.error('OpenAI request failed:', error);
 
-      throw new InternalServerErrorException(
-        'AI service is temporarily unavailable.',
-      );
+      return 'Follow your funded-account rules first. Control your risk, avoid revenge trading, and stop when your daily loss limit is reached.';
     }
   }
 
-  // ============================================================
-  // 7.14 - TRADE ANALYSIS
-  // ============================================================
-
-  async analyzeTrade(
-    trade: AnalyzeTradeDto,
-  ): Promise<TradeAnalysisResponseDto> {
-    const entry = Number(trade.entryPrice);
-    const stopLoss = Number(trade.stopLoss);
-    const takeProfit = Number(trade.takeProfit);
-    const positionSize = Number(trade.positionSize);
-    const riskPercent = Number(trade.riskPercent);
-
-    let riskPerUnit: number;
-    let rewardPerUnit: number;
-
-    if (trade.direction === 'LONG') {
-      riskPerUnit = entry - stopLoss;
-      rewardPerUnit = takeProfit - entry;
-    } else {
-      riskPerUnit = stopLoss - entry;
-      rewardPerUnit = entry - takeProfit;
-    }
-
-    const calculatedRR = riskPerUnit > 0 ? rewardPerUnit / riskPerUnit : 0;
-
+  async analyzeTrade(dto: AnalyzeTradeDto): Promise<TradeAnalysisResponseDto> {
     const riskRewardRatio =
-      trade.riskRewardRatio !== undefined
-        ? Number(trade.riskRewardRatio)
-        : Number(calculatedRR.toFixed(2));
+      dto.riskRewardRatio ?? this.calculateRiskReward(dto);
 
-    let score = 50;
+    const score = this.calculateTradeScore(riskRewardRatio, dto.riskPercent);
 
-    if (riskRewardRatio >= 3) {
-      score += 30;
-    } else if (riskRewardRatio >= 2) {
-      score += 20;
-    } else if (riskRewardRatio >= 1.5) {
-      score += 10;
-    } else if (riskRewardRatio < 1) {
-      score -= 25;
-    }
+    let assessment: TradeAnalysisResponseDto['assessment'];
 
-    if (riskPercent <= 0.5) {
-      score += 20;
-    } else if (riskPercent <= 1) {
-      score += 10;
-    } else if (riskPercent > 2) {
-      score -= 25;
-    }
-
-    if (riskPerUnit <= 0 || rewardPerUnit <= 0) {
-      score -= 30;
-    }
-
-    score = Math.max(0, Math.min(100, score));
-
-    let assessment: 'LOW_RISK' | 'MODERATE_RISK' | 'HIGH_RISK';
-
-    if (score >= 75) {
+    if (score >= 80) {
       assessment = 'LOW_RISK';
-    } else if (score >= 50) {
+    } else if (score >= 60) {
       assessment = 'MODERATE_RISK';
     } else {
       assessment = 'HIGH_RISK';
     }
 
-    let analysis = 'Trade analysis completed.';
-
-    const recommendations: string[] = [];
-
-    if (riskPercent > 1) {
-      recommendations.push('Consider reducing risk per trade.');
-    }
-
-    if (riskRewardRatio < 2) {
-      recommendations.push('Consider waiting for a better risk-reward setup.');
-    }
-
-    if (riskRewardRatio >= 3) {
-      recommendations.push('The calculated risk-reward ratio is strong.');
-    }
-
-    if (riskPerUnit <= 0) {
-      recommendations.push(
-        'Check the stop-loss placement relative to the entry.',
-      );
-    }
-
-    if (recommendations.length === 0) {
-      recommendations.push(
-        'Maintain disciplined position sizing and follow your trading plan.',
-      );
-    }
-
-    if (this.openai) {
-      try {
-        const completion = await this.openai.chat.completions.create({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are FundGuard AI. Analyze trading setups from a risk-management perspective. ' +
-                'Do not guarantee profits. Keep the analysis concise and disciplined.',
-            },
-            {
-              role: 'user',
-              content: `
-Analyze this trade:
-
-Asset: ${trade.asset}
-Direction: ${trade.direction}
-Entry: ${entry}
-Stop Loss: ${stopLoss}
-Take Profit: ${takeProfit}
-Position Size: ${positionSize}
-Risk Percent: ${riskPercent}%
-Risk Reward Ratio: ${riskRewardRatio}
-
-Give a concise professional risk assessment.
-                `,
-            },
-          ],
-          temperature: 0.2,
-        });
-
-        analysis = completion.choices[0]?.message?.content?.trim() ?? analysis;
-      } catch (error) {
-        console.error('OpenAI trade analysis failed:', error);
-      }
-    }
+    const recommendations = this.buildTradeRecommendations(
+      riskRewardRatio,
+      dto.riskPercent,
+    );
 
     return {
       success: true,
       assessment,
       score,
       riskRewardRatio,
-      riskPercent,
-      analysis,
+      riskPercent: dto.riskPercent,
+      analysis: `Trade analysis for ${dto.asset} ${dto.direction}. Risk is ${dto.riskPercent}% with a ${riskRewardRatio.toFixed(2)} risk-to-reward ratio.`,
       recommendations,
     };
   }
 
-  // ============================================================
-  // 7.15 - RISK ANALYSIS
-  // ============================================================
-
   async analyzeRisk(dto: AnalyzeRiskDto): Promise<RiskAnalysisResponseDto> {
-    const accountBalance = Number(dto.accountBalance ?? 0);
+    const riskRewardRatio =
+      dto.riskRewardRatio ?? this.calculateRiskReward(dto);
 
-    const dailyLossLimit = Number(dto.dailyLossLimit ?? 0);
+    const dailyLossUsagePercent =
+      dto.dailyLossLimit && dto.dailyLossLimit > 0
+        ? ((dto.currentDailyLoss ?? 0) / dto.dailyLossLimit) * 100
+        : 0;
 
-    const currentDailyLoss = Number(dto.currentDailyLoss ?? 0);
+    const drawdownUsagePercent =
+      dto.maxDrawdown && dto.maxDrawdown > 0
+        ? ((dto.currentDrawdown ?? 0) / dto.maxDrawdown) * 100
+        : 0;
 
-    const maxDrawdown = Number(dto.maxDrawdown ?? 0);
+    const warnings: string[] = [];
+    const recommendations: string[] = [];
 
-    const currentDrawdown = Number(dto.currentDrawdown ?? 0);
-
-    const tradesToday = Number(dto.tradesToday ?? 0);
-
-    let dailyLossUsagePercent = 0;
-
-    if (dailyLossLimit > 0) {
-      dailyLossUsagePercent = (currentDailyLoss / dailyLossLimit) * 100;
+    if (dto.riskPercent > 2) {
+      warnings.push('Risk per trade is above 2%.');
+      recommendations.push('Reduce risk per trade to 1-2% or less.');
     }
 
-    let drawdownUsagePercent = 0;
+    if (dailyLossUsagePercent >= 80) {
+      warnings.push('Daily loss usage is approaching the account limit.');
+      recommendations.push('Consider stopping trading for the day.');
+    }
 
-    if (maxDrawdown > 0) {
-      drawdownUsagePercent = (currentDrawdown / maxDrawdown) * 100;
+    if (drawdownUsagePercent >= 80) {
+      warnings.push('Drawdown usage is approaching the maximum limit.');
+      recommendations.push('Reduce exposure and protect remaining drawdown.');
+    }
+
+    if (dto.tradesToday !== undefined && dto.tradesToday >= 5) {
+      warnings.push('High number of trades today.');
+      recommendations.push(
+        'Avoid overtrading and wait for high-quality setups.',
+      );
     }
 
     let score = 100;
 
-    if (dailyLossUsagePercent >= 90) {
-      score -= 40;
-    } else if (dailyLossUsagePercent >= 75) {
-      score -= 25;
-    } else if (dailyLossUsagePercent >= 50) {
-      score -= 10;
+    if (dto.riskPercent > 2) {
+      score -= 20;
     }
 
-    if (drawdownUsagePercent >= 90) {
-      score -= 40;
-    } else if (drawdownUsagePercent >= 75) {
-      score -= 25;
-    } else if (drawdownUsagePercent >= 50) {
-      score -= 10;
+    if (dto.riskPercent > 3) {
+      score -= 20;
     }
 
-    if (tradesToday >= 5) {
-      score -= 25;
-    } else if (tradesToday >= 3) {
-      score -= 10;
+    if (dailyLossUsagePercent >= 80) {
+      score -= 20;
     }
 
-    if (dto.riskPercent > 1) {
-      score -= 15;
+    if (drawdownUsagePercent >= 80) {
+      score -= 20;
+    }
+
+    if (dto.tradesToday !== undefined && dto.tradesToday >= 5) {
+      score -= 10;
     }
 
     score = Math.max(0, Math.min(100, score));
 
-    let riskLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL' = 'LOW';
+    let riskLevel: RiskAnalysisResponseDto['riskLevel'];
 
-    if (dailyLossUsagePercent >= 90 || drawdownUsagePercent >= 90) {
-      riskLevel = 'CRITICAL';
-    } else if (
-      dailyLossUsagePercent >= 75 ||
-      drawdownUsagePercent >= 75 ||
-      dto.riskPercent > 2
-    ) {
-      riskLevel = 'HIGH';
-    } else if (
-      dailyLossUsagePercent >= 50 ||
-      drawdownUsagePercent >= 50 ||
-      tradesToday >= 3 ||
-      dto.riskPercent > 1
-    ) {
-      riskLevel = 'MODERATE';
+    if (score >= 80) {
+      riskLevel = 'LOW_RISK';
+    } else if (score >= 60) {
+      riskLevel = 'MODERATE_RISK';
+    } else {
+      riskLevel = 'HIGH_RISK';
     }
 
-    const riskRewardRatio =
-      dto.riskRewardRatio !== undefined
-        ? Number(dto.riskRewardRatio)
-        : this.calculateRiskReward(
-            dto.entryPrice,
-            dto.stopLoss,
-            dto.takeProfit,
-            dto.direction,
-          );
-
-    const analysisParts: string[] = [];
-
-    analysisParts.push(`Current risk level: ${riskLevel}.`);
-
-    if (accountBalance > 0) {
-      analysisParts.push(`Account balance: ${accountBalance}.`);
-    }
-
-    if (dailyLossLimit > 0) {
-      analysisParts.push(
-        `Daily loss usage is ${dailyLossUsagePercent.toFixed(1)}%.`,
-      );
-    }
-
-    if (maxDrawdown > 0) {
-      analysisParts.push(
-        `Drawdown usage is ${drawdownUsagePercent.toFixed(1)}%.`,
-      );
-    }
-
-    analysisParts.push(`Trades taken today: ${tradesToday}.`);
-
-    const recommendations: string[] = [];
-
-    if (dailyLossUsagePercent >= 75) {
-      recommendations.push(
-        'Avoid increasing risk while approaching the daily loss limit.',
-      );
-    }
-
-    if (drawdownUsagePercent >= 75) {
-      recommendations.push(
-        'Reduce exposure and protect remaining account drawdown.',
-      );
-    }
-
-    if (tradesToday >= 5) {
-      recommendations.push(
-        'Consider stopping for the day and reviewing your trading decisions.',
-      );
-    }
-
-    if (dto.riskPercent > 1) {
-      recommendations.push('Consider reducing risk per trade.');
-    }
-
-    if (riskRewardRatio < 2) {
-      recommendations.push(
-        'Consider waiting for a stronger risk-reward setup.',
-      );
-    }
-
-    if (recommendations.length === 0) {
-      recommendations.push(
-        'Risk metrics are currently within a more controlled range. Continue following your trading plan.',
-      );
-    }
-
-    const finalRiskLevel =
-      riskLevel === 'LOW'
-        ? 'LOW_RISK'
-        : riskLevel === 'MODERATE'
-          ? 'MODERATE_RISK'
-          : 'HIGH_RISK';
+    const summary =
+      riskLevel === 'LOW_RISK'
+        ? 'Risk conditions are currently controlled.'
+        : riskLevel === 'MODERATE_RISK'
+          ? 'Risk is elevated. Review your exposure before continuing.'
+          : 'Risk is high. Protect the account and avoid additional unnecessary exposure.';
 
     return {
       success: true,
-      riskLevel: finalRiskLevel,
+      riskLevel,
       score,
       riskRewardRatio,
-      riskPercent: Number(dto.riskPercent),
-      dailyLossUsagePercent: Number(dailyLossUsagePercent.toFixed(2)),
-      drawdownUsagePercent: Number(drawdownUsagePercent.toFixed(2)),
-      warnings: [],
-      summary: analysisParts.join(' '),
-      analysis: analysisParts.join(' '),
+      riskPercent: dto.riskPercent,
+      dailyLossUsagePercent,
+      drawdownUsagePercent,
+      analysis: `Risk analysis for ${dto.asset} ${dto.direction}. Current risk is ${dto.riskPercent}% with a ${riskRewardRatio.toFixed(2)} risk-to-reward ratio.`,
+      warnings,
       recommendations,
+      summary,
     };
   }
 
-  // ============================================================
-  // 7.16 - AI COACHING
-  // ============================================================
+  async generateCoaching(dto: AiCoachingDto): Promise<CoachingResponseDto> {
+    const disciplineScore = 70;
 
-  async generateCoaching(dto: CoachingDto): Promise<CoachingResponseDto> {
-    const experience = dto.experience ?? 'Not specified';
+    let coachingLevel: CoachingResponseDto['coachingLevel'];
 
-    const recentPerformance = dto.recentPerformance ?? 'Not specified';
-
-    const mainChallenge = dto.mainChallenge ?? 'Not specified';
-
-    const goal = dto.goal ?? 'Improve trading discipline';
-
-    const tradesToday = dto.tradesToday ?? 0;
-
-    let disciplineScore = 70;
-
-    if (tradesToday >= 5) {
-      disciplineScore -= 20;
-    } else if (tradesToday >= 3) {
-      disciplineScore -= 10;
-    }
-
-    if (
-      dto.currentDailyLoss !== undefined &&
-      dto.dailyLossLimit !== undefined &&
-      dto.dailyLossLimit > 0
-    ) {
-      const usage = (dto.currentDailyLoss / dto.dailyLossLimit) * 100;
-
-      if (usage >= 90) {
-        disciplineScore -= 20;
-      } else if (usage >= 75) {
-        disciplineScore -= 10;
-      }
-    }
-
-    disciplineScore = Math.max(0, Math.min(100, disciplineScore));
-
-    let coachingLevel: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' =
-      'INTERMEDIATE';
-
-    if (experience.toLowerCase().includes('begin')) {
+    if (disciplineScore < 50) {
       coachingLevel = 'BEGINNER';
-    } else if (experience.toLowerCase().includes('advanced')) {
+    } else if (disciplineScore < 80) {
+      coachingLevel = 'INTERMEDIATE';
+    } else {
       coachingLevel = 'ADVANCED';
     }
-
-    const strengths = [
-      'You are actively reviewing your trading process.',
-      'You are focusing on risk management.',
-    ];
-
-    const weaknesses: string[] = [];
-
-    if (tradesToday >= 5) {
-      weaknesses.push('Potential overtrading.');
-    }
-
-    if (dto.riskPercent !== undefined && dto.riskPercent > 1) {
-      weaknesses.push('Risk per trade may be higher than necessary.');
-    }
-
-    if (weaknesses.length === 0) {
-      weaknesses.push(
-        'Continue monitoring consistency and emotional discipline.',
-      );
-    }
-
-    const recommendations = [
-      'Follow a predefined trading plan.',
-      'Respect your stop-loss on every trade.',
-      'Avoid revenge trading after a loss.',
-      'Review your journal before taking another trade.',
-    ];
-
-    const actionPlan = [
-      "Review today's trading journal.",
-      'Identify one repeated mistake.',
-      'Define one rule to prevent that mistake tomorrow.',
-      'Keep risk consistent.',
-    ];
-
-    let coaching = 'Stay focused on process, risk management, and consistency.';
-
-    if (this.openai) {
-      try {
-        const completion = await this.openai.chat.completions.create({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are FundGuard AI, a professional trading discipline coach. ' +
-                'Help traders improve risk management, discipline, emotional control, ' +
-                'and consistency. Never guarantee profits.',
-            },
-            {
-              role: 'user',
-              content: `
-Trader experience: ${experience}
-
-Recent performance:
-${recentPerformance}
-
-Main challenge:
-${mainChallenge}
-
-Goal:
-${goal}
-
-Trades today:
-${tradesToday}
-
-Risk percent:
-${dto.riskPercent ?? 'Not specified'}%
-
-Provide concise coaching focused on discipline and risk management.
-                `,
-            },
-          ],
-          temperature: 0.3,
-        });
-
-        coaching = completion.choices[0]?.message?.content?.trim() ?? coaching;
-      } catch (error) {
-        console.error('OpenAI coaching request failed:', error);
-      }
-    }
-
     return {
       coachingLevel,
       disciplineScore,
-      summary: `Trading coaching generated for the goal: ${goal}.`,
-      strengths,
-      weaknesses,
-      recommendations,
-      coachMessage: coaching,
-      improvements: weaknesses,
-      actionPlan,
+      summary:
+        'Focus on consistent execution, controlled risk, and following your funded-account rules.',
+      strengths: [
+        'Willingness to review trading performance',
+        'Awareness of risk management',
+      ],
+      weaknesses: ['Consistency can be improved', 'Avoid unnecessary trades'],
+      improvements: [
+        'Follow the trading plan',
+        'Respect daily loss limits',
+        'Avoid revenge trading',
+      ],
+      actionPlan: [
+        'Set your maximum daily risk before trading',
+        'Take only planned setups',
+        'Review every trade after the session',
+      ],
+      coachMessage:
+        'Protect the account first. A disciplined trader does not need to trade every opportunity.',
+      recommendations: [
+        'Keep risk consistent',
+        'Stop after reaching your daily loss limit',
+        'Review emotional decisions before the next session',
+      ],
     };
   }
 
-  // ============================================================
-  // HELPER
-  // ============================================================
+  private calculateRiskReward(dto: {
+    direction: 'LONG' | 'SHORT';
+    entryPrice: number;
+    stopLoss: number;
+    takeProfit: number;
+  }): number {
+    const risk = Math.abs(dto.entryPrice - dto.stopLoss);
+    const reward = Math.abs(dto.takeProfit - dto.entryPrice);
 
-  private calculateRiskReward(
-    entryPrice: number,
-    stopLoss: number,
-    takeProfit: number,
-    direction: 'LONG' | 'SHORT',
-  ): number {
-    const entry = Number(entryPrice);
-    const stop = Number(stopLoss);
-    const target = Number(takeProfit);
-
-    let risk = 0;
-    let reward = 0;
-
-    if (direction === 'LONG') {
-      risk = entry - stop;
-      reward = target - entry;
-    } else {
-      risk = stop - entry;
-      reward = entry - target;
-    }
-
-    if (risk <= 0) {
+    if (risk === 0) {
       return 0;
     }
 
     return Number((reward / risk).toFixed(2));
+  }
+
+  private calculateTradeScore(
+    riskRewardRatio: number,
+    riskPercent: number,
+  ): number {
+    let score = 100;
+
+    if (riskRewardRatio < 1) {
+      score -= 35;
+    } else if (riskRewardRatio < 1.5) {
+      score -= 20;
+    } else if (riskRewardRatio < 2) {
+      score -= 10;
+    }
+
+    if (riskPercent > 2) {
+      score -= 25;
+    } else if (riskPercent > 1) {
+      score -= 10;
+    }
+
+    return Math.max(0, Math.min(100, score));
+  }
+
+  private buildTradeRecommendations(
+    riskRewardRatio: number,
+    riskPercent: number,
+  ): string[] {
+    const recommendations: string[] = [];
+
+    if (riskRewardRatio < 1.5) {
+      recommendations.push(
+        'Look for setups with a stronger risk-to-reward ratio.',
+      );
+    }
+
+    if (riskPercent > 2) {
+      recommendations.push('Reduce position size to lower risk.');
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push('Risk parameters are within a disciplined range.');
+    }
+
+    recommendations.push('Respect your funded-account daily loss limit.');
+
+    return recommendations;
   }
 }

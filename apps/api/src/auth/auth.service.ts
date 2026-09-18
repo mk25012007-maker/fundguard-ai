@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
@@ -50,7 +51,7 @@ export class AuthService {
     const user = await this.prisma.users.create({
       data: {
         id: crypto.randomUUID(),
-        email: dto.email,
+        email: dto.email.toLowerCase(),
         passwordHash,
         firstName: dto.firstName,
         lastName: dto.lastName,
@@ -86,43 +87,69 @@ export class AuthService {
       ipAddress?: string;
     } = {},
   ) {
-    const user = await this.validateUser(dto.email, dto.password);
+    console.log('[LOGIN DEBUG] Step 1: validating user');
 
-    const now = new Date();
+    try {
+      const user = await this.validateUser(dto.email, dto.password);
 
-    await this.prisma.users.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        lastLoginAt: now,
-        updatedAt: now,
-      },
-    });
-
-    const accessToken = this.generateAccessToken({
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    });
-
-    const refreshToken = await this.generateRefreshToken(user.id, meta);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
+      console.log('[LOGIN DEBUG] Step 2: user validated', {
         id: user.id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
         role: user.role,
-        emailVerified: user.emailVerified,
-      },
-    };
+      });
+
+      const now = new Date();
+
+      console.log('[LOGIN DEBUG] Step 3: updating lastLoginAt');
+
+      await this.prisma.users.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          lastLoginAt: now,
+          updatedAt: now,
+        },
+      });
+
+      console.log('[LOGIN DEBUG] Step 4: generating access token');
+
+      const accessToken = this.generateAccessToken({
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      console.log('[LOGIN DEBUG] Step 5: generating refresh token');
+
+      const refreshToken = await this.generateRefreshToken(user.id, meta);
+
+      console.log('[LOGIN DEBUG] Step 6: login successful');
+
+      return {
+        accessToken,
+        refreshToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          emailVerified: user.emailVerified,
+        },
+      };
+    } catch (error) {
+      console.error('[LOGIN DEBUG] LOGIN FAILED');
+
+      console.error(error);
+
+      throw error;
+    }
   }
 
   private async validateUser(email: string, password: string) {
+    console.log('[LOGIN DEBUG] Looking up user:', email.toLowerCase());
+
     const user = await this.prisma.users.findUnique({
       where: {
         email: email.toLowerCase(),
@@ -130,10 +157,18 @@ export class AuthService {
     });
 
     if (!user || !user.isActive) {
+      console.log('[LOGIN DEBUG] User not found or inactive');
+
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    console.log('[LOGIN DEBUG] User found:', user.id);
+
+    console.log('[LOGIN DEBUG] Checking password');
+
     const passwordValid = await comparePassword(password, user.passwordHash);
+
+    console.log('[LOGIN DEBUG] Password valid:', passwordValid);
 
     if (!passwordValid) {
       throw new UnauthorizedException('Invalid email or password');
@@ -147,6 +182,8 @@ export class AuthService {
     email: string;
     role: string;
   }) {
+    console.log('[LOGIN DEBUG] Signing access JWT');
+
     return this.jwtService.sign(payload);
   }
 
@@ -157,13 +194,19 @@ export class AuthService {
       ipAddress?: string;
     } = {},
   ) {
+    console.log('[LOGIN DEBUG] Creating refresh token');
+
     const token = signRefreshToken({
       sub: userId,
     });
 
+    console.log('[LOGIN DEBUG] Hashing refresh token');
+
     const tokenHash = hashToken(token);
 
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    console.log('[LOGIN DEBUG] Saving refresh token to database');
 
     await this.prisma.refreshToken.create({
       data: {
@@ -174,6 +217,8 @@ export class AuthService {
         expiresAt,
       },
     });
+
+    console.log('[LOGIN DEBUG] Refresh token saved');
 
     return token;
   }
@@ -304,9 +349,11 @@ export class AuthService {
     });
 
     /*
-     * Always return the same response whether the account
-     * exists or not. This prevents email enumeration.
+     * Always return the same response whether the
+     * account exists or not.
+     * This prevents email enumeration.
      */
+
     if (!user) {
       return {
         success: true,
