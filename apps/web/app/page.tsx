@@ -41,10 +41,15 @@ export default function Home() {
             </div>
 
             <h1 className="max-w-3xl text-5xl font-bold tracking-tight md:text-6xl">
-              Trade smarter.
+              AI Trading Risk Management
               <br />
-              <span className="text-primary">Protect your account.</span>
+              <span className="text-primary">for Funded Traders.</span>
             </h1>
+
+            <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+              AI-powered risk management, trade monitoring, and rule-violation detection for funded
+              traders and trading challenges.
+            </p>
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
               FundGuard AI helps funded traders monitor risk, detect rule violations, track trades,
@@ -136,7 +141,7 @@ export default function Home() {
             <p className="text-sm font-medium text-primary">POWERFUL TRADING PROTECTION</p>
 
             <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-              Everything you need to trade with discipline
+              AI-Powered Trading Risk Management Features
             </h2>
 
             <p className="mt-4 text-muted">
@@ -219,7 +224,7 @@ export default function Home() {
             <p className="text-sm font-medium text-primary">HOW IT WORKS</p>
 
             <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-              From trading activity to better decisions
+              How FundGuard AI Protects Funded Traders
             </h2>
 
             <p className="mt-4 text-muted">
@@ -476,11 +481,9 @@ export default function Home() {
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-3xl text-white">
             🛡️
           </div>
-
           <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
-            Protect your trading journey with FundGuard AI.
+            Start Trading Smarter with FundGuard AI
           </h2>
-
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted">
             Monitor your risk, understand your trading behavior, and build better trading discipline
             with AI-powered insights.
