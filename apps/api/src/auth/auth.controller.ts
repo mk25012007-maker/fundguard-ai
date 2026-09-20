@@ -23,18 +23,20 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { RolesGuard } from './guards/roles.guard';
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
 const ACCESS_COOKIE_OPTS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'none' as const,
+  secure: IS_PRODUCTION,
+  sameSite: (IS_PRODUCTION ? 'none' : 'lax') as 'none' | 'lax',
   maxAge: 15 * 60 * 1000,
   path: '/',
 };
 
 const REFRESH_COOKIE_OPTS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'none' as const,
+  secure: IS_PRODUCTION,
+  sameSite: (IS_PRODUCTION ? 'none' : 'lax') as 'none' | 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000,
   path: '/auth/refresh',
 };

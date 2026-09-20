@@ -5,6 +5,7 @@ import { JwtPayload } from '../interfaces/jwt-payload.interface';
 export function signRefreshToken(payload: Pick<JwtPayload, 'sub'>): string {
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET as string, {
     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? '7d',
+    jwtid: crypto.randomUUID(),
   });
 }
 

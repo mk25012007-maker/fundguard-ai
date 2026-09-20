@@ -5,7 +5,7 @@ import Link from "next/link";
 const navigation = [
   { label: "Overview", href: "/dashboard" },
   { label: "Trades", href: "/dashboard/trades" },
-  { label: "Accounts", href: "/dashboard/accounts" },
+  { label: "Accounts", href: "/dashboard/account" },
   { label: "Risk", href: "/dashboard/risk" },
   { label: "AI Insights", href: "/dashboard/ai" },
 ];

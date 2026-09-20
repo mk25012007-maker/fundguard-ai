@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -454,10 +454,10 @@ export default function DashboardPage() {
 
               <button
                 type="button"
-                onClick={() => router.push("/profile")}
+                onClick={() => router.push("/dashboard/profile")}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface-raised sm:flex-none"
               >
-                <span>ðŸ‘¤</span>
+                <span>👤</span>
                 <span>Profile</span>
               </button>
 
@@ -466,7 +466,7 @@ export default function DashboardPage() {
                 onClick={handleLogout}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-500/20 sm:flex-none"
               >
-                <span>â†ª</span>
+                <span>↪</span>
                 <span>Logout</span>
               </button>
             </div>
@@ -537,7 +537,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-xl">
-                    ðŸ¤–
+                    🤖
                   </div>
 
                   <div>
@@ -777,7 +777,7 @@ export default function DashboardPage() {
                   ) : (
                     <div className="mt-4 rounded-lg bg-surface-raised p-4">
                       <p className="text-sm text-primary">
-                        ✓ Your current trading activity is within configured risk limits.
+                        ? Your current trading activity is within configured risk limits.
                       </p>
                     </div>
                   )}
@@ -828,7 +828,7 @@ export default function DashboardPage() {
                             key={index}
                             className="rounded-lg bg-surface-raised px-4 py-3 text-sm text-muted"
                           >
-                            <span className="mr-2 text-primary">âœ“</span>
+                            <span className="mr-2 text-primary">✓</span>
 
                             {reason}
                           </div>
@@ -987,7 +987,7 @@ export default function DashboardPage() {
                         <p className="font-medium text-foreground">{account.accountLabel}</p>
 
                         <p className="mt-1 text-sm text-muted">
-                          {account.broker} Â· {account.externalId}
+                          {account.broker} · {account.externalId}
                         </p>
                       </div>
 

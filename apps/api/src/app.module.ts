@@ -12,7 +12,9 @@ import { TradesModule } from './trades/trades.module';
 import { RiskRulesModule } from './risk-rules/risk-rules.module';
 import { AiModule } from './ai/ai.module';
 import { AiAnalysisModule } from './ai-analysis/ai-analysis.module';
+import { PaymentsModule } from './payments/payments.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+
 import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
@@ -35,6 +37,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     TradesModule,
     RiskRulesModule,
     AiModule,
+    PaymentsModule,
     AiAnalysisModule,
     AnalyticsModule,
     NotificationsModule,

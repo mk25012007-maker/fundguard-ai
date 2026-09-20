@@ -31,8 +31,13 @@ const navigation = [
   },
   {
     label: "Accounts",
-    href: "/dashboard/accounts",
+    href: "/dashboard/account",
     icon: "💳",
+  },
+  {
+    label: "Pricing",
+    href: "/dashboard/pricing",
+    icon: "💰",
   },
 ];
 
