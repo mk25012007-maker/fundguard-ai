@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FundGuard AI",
   description: "AI-powered trading risk management platform",
+  verification: {
+    google: "zky_9pmIEXH7oQJnztysyeJ2wwO7nPE8LJtNkycs43o",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
