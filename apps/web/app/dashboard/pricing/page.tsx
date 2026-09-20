@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { apiFetch } from "../../../src/lib/api";
 
 declare global {
   interface Window {
@@ -36,7 +37,7 @@ export default function PricingPage() {
         throw new Error("Razorpay Checkout could not be loaded");
       }
 
-      const response = await fetch("http://localhost:3001/payments/subscription", {
+      const response = await apiFetch("/payments/subscription", {
         method: "POST",
         credentials: "include",
       });
@@ -60,7 +61,7 @@ export default function PricingPage() {
         description: "FundGuard AI PRO Subscription",
         handler: async function (paymentResponse: any) {
           try {
-            const verifyResponse = await fetch("http://localhost:3001/payments/verify", {
+            const verifyResponse = await apiFetch("/payments/verify", {
               method: "POST",
               credentials: "include",
               headers: {
