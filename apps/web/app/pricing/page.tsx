@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FundGuard AI Pricing - Trading Risk Management Plans",
+  description:
+    "Explore FundGuard AI pricing plans for funded traders, including risk monitoring, trade tracking, analytics, AI insights, alerts, and trading discipline tools.",
+};
+
 export default function PricingPage() {
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-16 text-white">
@@ -8,9 +16,8 @@ export default function PricingPage() {
           </p>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Simple pricing for disciplined trading
+            FundGuard AI Pricing — Trading Risk Management Plans
           </h1>
-
           <p className="mt-5 text-lg text-slate-300">
             Start free and upgrade when you need the full FundGuard AI experience.
           </p>
