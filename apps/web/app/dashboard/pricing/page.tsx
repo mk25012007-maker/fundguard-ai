@@ -20,7 +20,9 @@ export default function PricingPage() {
             FundGuard AI
           </p>
 
-          <h1 className="mt-2 text-4xl font-bold">Choose your trading protection plan</h1>
+          <h1 className="mt-2 text-4xl font-bold">
+            FundGuard AI Pricing — Trading Risk Management Plans
+          </h1>
 
           <p className="mx-auto mt-4 max-w-2xl text-slate-400">
             Start free and upgrade when you need advanced risk monitoring, analytics, and AI
