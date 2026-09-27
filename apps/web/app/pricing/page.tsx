@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "FundGuard AI Pricing - Trading Risk Management Plans",
+  title: "Quantivo AI Pricing - Trading Risk Management Plans",
   description:
-    "Explore FundGuard AI pricing plans for funded traders, including risk monitoring, trade tracking, analytics, AI insights, alerts, and trading discipline tools.",
+    "Explore Quantivo AI pricing plans for funded traders, including risk monitoring, trade tracking, analytics, AI insights, alerts, and trading discipline tools.",
 };
 
 export default function PricingPage() {
@@ -12,14 +12,14 @@ export default function PricingPage() {
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-emerald-400">
-            FundGuard AI
+            Quantivo AI
           </p>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            FundGuard AI Pricing — Trading Risk Management Plans
+            Quantivo AI Pricing — Trading Risk Management Plans
           </h1>
           <p className="mt-5 text-lg text-slate-300">
-            Start free and upgrade when you need the full FundGuard AI experience.
+            Start free and upgrade when you need the full Quantivo AI experience.
           </p>
         </div>
 
