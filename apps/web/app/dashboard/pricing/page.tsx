@@ -57,8 +57,8 @@ export default function PricingPage() {
       const options = {
         key,
         subscription_id: data.id,
-        name: "FundGuard AI",
-        description: "FundGuard AI PRO Subscription",
+        name: "Quantivo AI",
+        description: "Quantivo AI PRO Subscription",
         handler: async function (paymentResponse: any) {
           try {
             const verifyResponse = await apiFetch("/payments/verify", {
@@ -122,7 +122,7 @@ export default function PricingPage() {
 
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-wider text-emerald-400">
-            FundGuard AI
+            Quantivo AI
           </p>
 
           <h1 className="mt-2 text-4xl font-bold">Choose your trading protection plan</h1>

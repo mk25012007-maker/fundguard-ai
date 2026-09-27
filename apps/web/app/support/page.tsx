@@ -5,7 +5,7 @@ export default function SupportPage() {
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-5xl px-6 py-16">
         <Link href="/" className="text-sm font-medium text-primary hover:underline">
-          ← Back to FundGuard AI
+          ← Back to Quantivo AI
         </Link>
 
         <div className="mt-10">
@@ -14,7 +14,7 @@ export default function SupportPage() {
           <h1 className="mt-2 text-4xl font-bold tracking-tight">How can we help?</h1>
 
           <p className="mt-4 max-w-2xl text-lg leading-8 text-muted">
-            Find help with your FundGuard AI account, trading dashboard, payments, risk monitoring,
+            Find help with your Quantivo AI account, trading dashboard, payments, risk monitoring,
             and other platform features.
           </p>
         </div>
@@ -26,7 +26,7 @@ export default function SupportPage() {
             <h2 className="mt-4 text-xl font-semibold">Account & Login</h2>
 
             <p className="mt-3 leading-7 text-muted">
-              Having trouble signing in, registering, or accessing your FundGuard AI account?
+              Having trouble signing in, registering, or accessing your Quantivo AI account?
             </p>
 
             <Link
@@ -94,7 +94,7 @@ export default function SupportPage() {
           <h2 className="text-2xl font-semibold">Contact Support</h2>
 
           <p className="mt-3 max-w-2xl leading-7 text-muted">
-            If you cannot find the answer you need, contact FundGuard AI support with a description
+            If you cannot find the answer you need, contact Quantivo AI support with a description
             of the issue, the affected feature, and any relevant error message.
           </p>
 
@@ -112,7 +112,7 @@ export default function SupportPage() {
 
         <div className="mt-10 border-t border-border pt-6">
           <Link href="/" className="text-sm font-medium text-primary hover:underline">
-            ← Return to FundGuard AI
+            ← Return to Quantivo AI
           </Link>
         </div>
       </div>
