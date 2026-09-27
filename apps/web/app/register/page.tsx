@@ -83,7 +83,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="text-2xl font-semibold text-foreground">
-            FundGuard AI
+            Quantivo AI
           </Link>
 
           <p className="mt-2 text-sm text-muted">Trading Risk Management</p>
@@ -94,7 +94,7 @@ export default function RegisterPage() {
             <h1 className="text-2xl font-semibold text-foreground">Create your account</h1>
 
             <p className="mt-1 text-sm text-muted">
-              Start managing your trading risk with FundGuard AI.
+              Start managing your trading risk with Quantivo AI.
             </p>
           </div>
 
