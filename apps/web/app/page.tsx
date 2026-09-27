@@ -9,7 +9,7 @@ export default function Home() {
       <nav className="border-b border-border">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
           <Link href="/" className="text-xl font-bold tracking-tight">
-            FundGuard <span className="text-primary">AI</span>
+            Quantivo <span className="text-primary">AI</span>
           </Link>
 
           <div className="hidden items-center gap-6 text-sm md:flex">
@@ -52,7 +52,7 @@ export default function Home() {
             </p>
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
-              FundGuard AI helps funded traders monitor risk, detect rule violations, track trades,
+              Quantivo AI helps funded traders monitor risk, detect rule violations, track trades,
               and stay disciplined with intelligent AI-powered insights.
             </p>
 
@@ -85,7 +85,7 @@ export default function Home() {
             <div className="rounded-2xl border border-border bg-card p-6 shadow-xl">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted">FundGuard AI</p>
+                  <p className="text-sm text-muted">Quantivo AI</p>
                   <h2 className="mt-1 text-xl font-semibold">Risk Overview</h2>
                 </div>
 
@@ -145,8 +145,8 @@ export default function Home() {
             </h2>
 
             <p className="mt-4 text-muted">
-              FundGuard AI brings risk monitoring, trade tracking, analytics, and AI-powered
-              insights together in one platform.
+              Quantivo AI brings risk monitoring, trade tracking, analytics, and AI-powered insights
+              together in one platform.
             </p>
           </div>
 
@@ -224,11 +224,11 @@ export default function Home() {
             <p className="text-sm font-medium text-primary">HOW IT WORKS</p>
 
             <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-              How FundGuard AI Protects Funded Traders
+              How Quantivo AI Protects Funded Traders
             </h2>
 
             <p className="mt-4 text-muted">
-              FundGuard AI helps you understand your trading behavior and stay within your risk
+              Quantivo AI helps you understand your trading behavior and stay within your risk
               rules.
             </p>
           </div>
@@ -295,7 +295,7 @@ export default function Home() {
               </div>
 
               <p className="mt-4 leading-7 text-muted">
-                FundGuard AI continuously helps you monitor important trading risk metrics and
+                Quantivo AI continuously helps you monitor important trading risk metrics and
                 identify situations that could put your account at risk.
               </p>
 
@@ -444,7 +444,7 @@ export default function Home() {
               </div>
 
               <p className="mt-4 text-muted">
-                Unlock the full FundGuard AI risk management experience.
+                Unlock the full Quantivo AI risk management experience.
               </p>
 
               <ul className="mt-6 space-y-3 text-sm">
@@ -482,7 +482,7 @@ export default function Home() {
             🛡️
           </div>
           <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
-            Start Trading Smarter with FundGuard AI
+            Start Trading Smarter with Quantivo AI
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted">
             Monitor your risk, understand your trading behavior, and build better trading discipline
@@ -513,7 +513,7 @@ export default function Home() {
           <div className="grid gap-10 md:grid-cols-4">
             <div className="md:col-span-2">
               <Link href="/" className="text-xl font-bold tracking-tight">
-                FundGuard <span className="text-primary">AI</span>
+                Quantivo <span className="text-primary">AI</span>
               </Link>
 
               <p className="mt-4 max-w-md leading-7 text-muted">
@@ -561,7 +561,7 @@ export default function Home() {
 
           <div className="mt-10 border-t border-border pt-6 text-sm text-muted">
             <div className="flex flex-col justify-between gap-3 sm:flex-row">
-              <p>© {new Date().getFullYear()} FundGuard AI. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} Quantivo AI. All rights reserved.</p>
 
               <p>AI-powered trading risk management platform.</p>
             </div>
