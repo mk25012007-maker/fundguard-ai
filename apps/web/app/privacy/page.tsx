@@ -5,7 +5,7 @@ export default function PrivacyPage() {
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-4xl px-6 py-16">
         <Link href="/" className="text-sm font-medium text-primary hover:underline">
-          ← Back to FundGuard AI
+          ← Back to Quantivo AI
         </Link>
 
         <div className="mt-10">
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-foreground">1. Introduction</h2>
 
             <p className="mt-4">
-              FundGuard AI respects your privacy and is committed to protecting information
+              Quantivo AI respects your privacy and is committed to protecting information
               associated with your use of our software platform. This Privacy Policy explains what
               information we collect, how we use it, and the choices available to you.
             </p>
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-foreground">2. Information We Collect</h2>
 
             <p className="mt-4">
-              Depending on how you use FundGuard AI, we may collect account information such as your
+              Depending on how you use Quantivo AI, we may collect account information such as your
               name, email address, and authentication information.
             </p>
 
@@ -46,8 +46,8 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-foreground">3. How We Use Information</h2>
 
             <p className="mt-4">
-              We use collected information to provide, maintain, secure, and improve FundGuard AI
-              and its features.
+              We use collected information to provide, maintain, secure, and improve Quantivo AI and
+              its features.
             </p>
 
             <ul className="mt-4 list-disc space-y-2 pl-6">
@@ -65,8 +65,8 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-foreground">4. Trading Information</h2>
 
             <p className="mt-4">
-              FundGuard AI may process trading information that you provide or that is made
-              available through supported integrations. This information is used to provide the
+              Quantivo AI may process trading information that you provide or that is made available
+              through supported integrations. This information is used to provide the
               trading-management features requested by you.
             </p>
 
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-foreground">5. AI Processing</h2>
 
             <p className="mt-4">
-              Some FundGuard AI features use artificial intelligence to analyze information and
+              Some Quantivo AI features use artificial intelligence to analyze information and
               generate insights. Information required for these features may be processed by our
               technology providers in accordance with applicable agreements and safeguards.
             </p>
@@ -101,7 +101,7 @@ export default function PrivacyPage() {
             </p>
 
             <p className="mt-4">
-              FundGuard AI does not intentionally store complete payment card numbers or card
+              Quantivo AI does not intentionally store complete payment card numbers or card
               security codes on its own servers.
             </p>
           </section>
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
             </h2>
 
             <p className="mt-4">
-              FundGuard AI may use cookies or similar technologies to maintain authenticated
+              Quantivo AI may use cookies or similar technologies to maintain authenticated
               sessions, protect accounts, remember preferences, and support the functionality of the
               service.
             </p>
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-foreground">10. Third-Party Services</h2>
 
             <p className="mt-4">
-              FundGuard AI may rely on third-party services for infrastructure, hosting,
+              Quantivo AI may rely on third-party services for infrastructure, hosting,
               authentication, payments, analytics, AI processing, and other operational functions.
               These providers may process information as necessary to provide their services.
             </p>
@@ -166,7 +166,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-foreground">12. Children&apos;s Privacy</h2>
 
             <p className="mt-4">
-              FundGuard AI is not intended for children who are not legally permitted to use
+              Quantivo AI is not intended for children who are not legally permitted to use
               financial or trading-related services in their jurisdiction.
             </p>
           </section>
@@ -185,14 +185,14 @@ export default function PrivacyPage() {
 
             <p className="mt-4">
               If you have questions or requests regarding this Privacy Policy, please contact
-              FundGuard AI through the support channel provided on the website.
+              Quantivo AI through the support channel provided on the website.
             </p>
           </section>
         </div>
 
         <div className="mt-12 border-t border-border pt-6">
           <Link href="/" className="text-sm font-medium text-primary hover:underline">
-            ← Return to FundGuard AI
+            ← Return to Quantivo AI
           </Link>
         </div>
       </div>
