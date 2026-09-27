@@ -15,7 +15,7 @@ export function Sidebar() {
     <aside className="hidden min-h-screen w-64 shrink-0 flex-col border-r border-border bg-surface md:flex">
       <div className="border-b border-border px-6 py-5">
         <Link href="/dashboard">
-          <div className="text-lg font-semibold text-foreground">FundGuard AI</div>
+          <div className="text-lg font-semibold text-foreground">Quantivo AI</div>
 
           <div className="mt-1 text-xs text-muted">Trading Risk Management</div>
         </Link>
@@ -36,7 +36,7 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-border px-6 py-4">
-        <p className="text-xs text-muted">FundGuard AI</p>
+        <p className="text-xs text-muted">Quantivo AI</p>
       </div>
     </aside>
   );

@@ -57,7 +57,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               </div>
 
               <div>
-                <div className="text-lg font-bold">FundGuard AI</div>
+                <div className="text-lg font-bold">Quantivo AI</div>
 
                 <div className="text-xs text-slate-400">Trading Protection</div>
               </div>
@@ -93,7 +93,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
           {/* Sidebar Footer */}
           <div className="border-t border-slate-800 p-4">
             <div className="rounded-xl bg-slate-800 p-4">
-              <div className="text-sm font-semibold">FundGuard AI</div>
+              <div className="text-sm font-semibold">Quantivo AI</div>
 
               <div className="mt-1 text-xs text-slate-400">
                 Helping funded traders pass challenges with AI
@@ -111,7 +111,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 F
               </div>
 
-              <span className="font-bold">FundGuard AI</span>
+              <span className="font-bold">Quantivo AI</span>
             </Link>
 
             <Link

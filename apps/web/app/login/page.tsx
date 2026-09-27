@@ -65,7 +65,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="text-2xl font-semibold text-foreground">
-            FundGuard AI
+            Quantivo AI
           </Link>
 
           <p className="mt-2 text-sm text-muted">Trading Risk Management</p>
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-foreground">Welcome back</h1>
 
-            <p className="mt-1 text-sm text-muted">Sign in to your FundGuard account.</p>
+            <p className="mt-1 text-sm text-muted">Sign in to your Quantivo AI Account.</p>
           </div>
 
           {error && (

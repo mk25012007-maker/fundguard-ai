@@ -544,7 +544,7 @@ export default function DashboardPage() {
                     <h2 className="text-lg font-semibold text-foreground">AI Trading Insights</h2>
 
                     <p className="mt-1 text-sm text-muted">
-                      Analyze your trading behaviour, risk and activity with FundGuard AI.
+                      Analyze your trading behaviour, risk and activity with Quantivo AI.
                     </p>
                   </div>
                 </div>
@@ -590,7 +590,7 @@ export default function DashboardPage() {
           <section className="mt-6 rounded-xl border border-border bg-surface p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">FundGuard Risk Dashboard</h2>
+                <h2 className="text-xl font-semibold text-foreground">Quantivo Risk Dashboard</h2>
 
                 <p className="mt-1 text-sm text-muted">
                   Real-time risk protection from your risk engine.

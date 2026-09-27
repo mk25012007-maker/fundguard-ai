@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -37,7 +37,7 @@ export function Topbar() {
         <div className="hidden text-right sm:block">
           <p className="text-sm font-medium text-foreground">Trader</p>
 
-          <p className="text-xs text-muted">FundGuard Account</p>
+          <p className="text-xs text-muted">Quantivo AI Account</p>
         </div>
 
         <Button variant="ghost">Profile</Button>
