@@ -45,7 +45,7 @@ export default function LoginScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>FundGuard AI</Text>
+      <Text style={styles.title}>Quantivo AI</Text>
 
       <Text style={styles.subtitle}>Welcome back</Text>
 

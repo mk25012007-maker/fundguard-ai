@@ -239,3 +239,21 @@ export async function createTestNotification(title?: string, message?: string) {
 
   return response.json();
 }
+
+/* =========================================================
+   PAYMENTS
+========================================================= */
+
+export async function createRazorpaySubscription() {
+  const response = await apiFetch("/payments/subscription", {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+
+    throw new Error(errorText || `Create subscription failed with status ${response.status}`);
+  }
+
+  return response.json();
+}

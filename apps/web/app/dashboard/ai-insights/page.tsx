@@ -96,7 +96,7 @@ export default function AiInsightsPage() {
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <p className="text-sm font-medium text-emerald-400">FundGuard AI</p>
+              <p className="text-sm font-medium text-emerald-400">Quantivo AI</p>
 
               <h1 className="mt-1 text-3xl font-bold">AI Insights</h1>
 

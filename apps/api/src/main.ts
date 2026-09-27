@@ -72,7 +72,7 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3001);
 
   console.log(
-    `FundGuard AI API running on http://localhost:${process.env.PORT ?? 3001}`,
+    `Quantivo AI API running on http://localhost:${process.env.PORT ?? 3001}`,
   );
 }
 

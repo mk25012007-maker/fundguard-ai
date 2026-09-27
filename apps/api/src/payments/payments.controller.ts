@@ -10,7 +10,13 @@ export class PaymentsController {
 
   @Post('subscription')
   async createSubscription(@Req() req: Request) {
-    return this.razorpayService.createSubscription();
+    const user = req.user as {
+      id: string;
+      email: string;
+      role: string;
+    };
+
+    return this.razorpayService.createSubscription(user.id);
   }
 
   @Post('verify')

@@ -21,7 +21,7 @@ export default function DashboardScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>FundGuard AI</Text>
+      <Text style={styles.title}>Quantivo AI</Text>
 
       <Text style={styles.subtitle}>Trading Dashboard</Text>
 
@@ -44,7 +44,7 @@ export default function DashboardScreen({ navigation }: Props) {
       </View>
 
       <TouchableOpacity style={styles.aiButton} onPress={() => navigation.navigate("AIAssistant")}>
-        <Text style={styles.aiButtonText}>Ask FundGuard AI</Text>
+        <Text style={styles.aiButtonText}>Ask Quantivo AI</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>

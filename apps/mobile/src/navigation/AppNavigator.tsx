@@ -35,7 +35,7 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Dashboard"
           component={DashboardScreen}
-          options={{ title: "FundGuard AI" }}
+          options={{ title: "Quantivo AI" }}
         />
 
         <Stack.Screen

@@ -132,7 +132,7 @@ export default function TradingAccountsScreen() {
         <View style={styles.emptyCard}>
           <Text style={styles.emptyTitle}>No trading accounts</Text>
           <Text style={styles.emptyText}>
-            Connect a trading account to start monitoring it with FundGuard AI.
+            Connect a trading account to start monitoring it with Quantivo AI.
           </Text>
         </View>
       ) : (

@@ -26,7 +26,7 @@ export default function AIAssistantScreen() {
     const trimmedMessage = message.trim();
 
     if (!trimmedMessage) {
-      Alert.alert("Message required", "Please enter a question for FundGuard AI.");
+      Alert.alert("Message required", "Please enter a question for Quantivo AI.");
       return;
     }
 
@@ -84,7 +84,7 @@ export default function AIAssistantScreen() {
       console.error("AI Assistant error:", error);
 
       const errorMessage =
-        error instanceof Error ? error.message : "Unable to connect to FundGuard AI.";
+        error instanceof Error ? error.message : "Unable to connect to Quantivo AI.";
 
       Alert.alert("AI Assistant Error", errorMessage);
     } finally {
@@ -110,7 +110,7 @@ export default function AIAssistantScreen() {
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>FundGuard AI</Text>
+          <Text style={styles.title}>Quantivo AI</Text>
 
           <Text style={styles.subtitle}>AI Trading Risk Assistant</Text>
         </View>
@@ -127,7 +127,7 @@ export default function AIAssistantScreen() {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Ask FundGuard AI</Text>
+        <Text style={styles.cardTitle}>Ask Quantivo AI</Text>
 
         <Text style={styles.description}>
           Ask questions about your trading risk, account limits, drawdown, or trading decisions.
@@ -178,7 +178,7 @@ export default function AIAssistantScreen() {
                   item.role === "user" ? styles.userRole : styles.assistantRole,
                 ]}
               >
-                {item.role === "user" ? "You" : "FundGuard AI"}
+                {item.role === "user" ? "You" : "Quantivo AI"}
               </Text>
 
               <Text style={styles.messageText}>{item.content}</Text>

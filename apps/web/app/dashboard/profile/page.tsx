@@ -33,7 +33,7 @@ export default function ProfilePage() {
         setUser(data);
       } catch (err) {
         console.error("Failed to load profile:", err);
-        setError("Unable to connect to FundGuard AI API.");
+        setError("Unable to connect to Quantivo AI API.");
       } finally {
         setLoading(false);
       }
@@ -53,11 +53,11 @@ export default function ProfilePage() {
         </Link>
 
         <div className="rounded-2xl border border-white/10 bg-[#111827] p-8 shadow-xl">
-          <p className="text-sm font-medium text-emerald-400">FundGuard AI</p>
+          <p className="text-sm font-medium text-emerald-400">Quantivo AI</p>
 
           <h1 className="mt-1 text-3xl font-bold">Profile</h1>
 
-          <p className="mt-2 text-gray-400">View your FundGuard AI trading profile.</p>
+          <p className="mt-2 text-gray-400">View your Quantivo AI trading profile.</p>
 
           {loading && (
             <div className="mt-8 rounded-xl bg-white/5 p-6 text-gray-400">Loading profile...</div>
@@ -147,7 +147,7 @@ export default function ProfilePage() {
                 <p className="font-semibold text-emerald-300">Profile connected successfully</p>
 
                 <p className="mt-1 text-sm text-gray-400">
-                  Your profile is connected to the FundGuard AI backend.
+                  Your profile is connected to the Quantivo AI backend.
                 </p>
               </div>
             </div>

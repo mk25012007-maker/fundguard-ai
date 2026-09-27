@@ -90,7 +90,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string) => {
     const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-    console.log("FundGuard API URL:", apiUrl);
+    console.log("Quantivo API URL:", apiUrl);
 
     if (!apiUrl) {
       throw new Error("API URL is not configured.");

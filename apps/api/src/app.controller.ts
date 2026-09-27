@@ -5,7 +5,7 @@ export class AppController {
   @Get()
   getRoot() {
     return {
-      name: 'FundGuard AI API',
+      name: 'Quantivo AI API',
       status: 'ok',
       message: 'API is running',
     };
@@ -15,7 +15,7 @@ export class AppController {
   getHealth() {
     return {
       status: 'ok',
-      service: 'fundguard-ai-api',
+      service: 'quantivo-ai-api',
       timestamp: new Date().toISOString(),
     };
   }

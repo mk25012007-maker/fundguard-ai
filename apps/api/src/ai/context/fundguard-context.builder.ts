@@ -16,7 +16,7 @@ export type FundGuardRiskContext = {
 export class FundGuardContextBuilder {
   static buildRiskContext(context: FundGuardRiskContext): string {
     const lines: string[] = [
-      'FUNDGUARD AI TRADING RISK CONTEXT',
+      'QUANTIVO AI TRADING RISK CONTEXT',
       '================================',
     ];
 

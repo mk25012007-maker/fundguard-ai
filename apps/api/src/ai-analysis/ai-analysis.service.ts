@@ -258,7 +258,7 @@ export class AiAnalysisService {
         );
 
         recommendations.push(
-          'Keep recording complete trade data so FundGuard AI can provide deeper analysis.',
+          'Keep recording complete trade data so Quantivo AI can provide deeper analysis.',
         );
       }
 
@@ -345,7 +345,7 @@ export class AiAnalysisService {
             model: process.env.OPENAI_MODEL || 'gpt-5.6-luna',
 
             instructions:
-              'You are FundGuard AI, a trading risk and behaviour analysis assistant. Analyze the supplied trading activity. Do not invent missing P&L, entry/exit prices, drawdown, or other unavailable data. Return practical risk-focused observations.',
+              'You are Quantivo AI, a trading risk and behaviour analysis assistant. Analyze the supplied trading activity. Do not invent missing P&L, entry/exit prices, drawdown, or other unavailable data. Return practical risk-focused observations.',
 
             input: JSON.stringify({
               task: 'Analyze trader behaviour and risk patterns.',
@@ -382,7 +382,7 @@ export class AiAnalysisService {
         analysisAvailable: true,
         analysisMode: 'LOCAL',
         tradeCount: totalTrades,
-        message: 'FundGuard local AI analysis completed successfully.',
+        message: 'Quantivo local AI analysis completed successfully.',
         analysis: localAnalysis,
       };
     } catch (error: any) {

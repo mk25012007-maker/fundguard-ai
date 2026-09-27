@@ -57,7 +57,7 @@ export function checkAiGuardrails(message: string): GuardrailResult {
       return {
         allowed: false,
         message:
-          'FundGuard AI cannot guarantee profits or recommend reckless trading. I can help you evaluate risk, position sizing, drawdown, and disciplined trading decisions instead.',
+          'Quantivo AI cannot guarantee profits or recommend reckless trading. I can help you evaluate risk, position sizing, drawdown, and disciplined trading decisions instead.',
       };
     }
   }
@@ -67,7 +67,7 @@ export function checkAiGuardrails(message: string): GuardrailResult {
       return {
         allowed: false,
         message:
-          'FundGuard AI does not recommend removing risk controls, using excessive leverage, or taking unusually large risks. Consider protecting capital with a defined stop loss and controlled position size.',
+          'Quantivo AI does not recommend removing risk controls, using excessive leverage, or taking unusually large risks. Consider protecting capital with a defined stop loss and controlled position size.',
       };
     }
   }

@@ -18,7 +18,7 @@ export default function RegisterScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Join FundGuard AI</Text>
+      <Text style={styles.subtitle}>Join Quantivo AI</Text>
 
       <TextInput
         style={styles.input}

@@ -52,7 +52,7 @@ export class NotificationService {
     const result = await this.transporter.sendMail({
       from,
       to: notification.to,
-      subject: notification.subject || 'FundGuard AI Notification',
+      subject: notification.subject || 'Quantivo AI Notification',
       text: notification.message,
     });
 
@@ -74,10 +74,10 @@ export class NotificationService {
     const message: ExpoPushMessage = {
       to: pushToken,
       sound: 'default',
-      title: notification.subject || 'FundGuard AI',
+      title: notification.subject || 'Quantivo AI',
       body: notification.message,
       data: {
-        source: 'fundguard-ai',
+        source: 'quantivo-ai',
       },
     };
 

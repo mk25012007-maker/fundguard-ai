@@ -33,7 +33,7 @@ export class AiService {
           {
             role: 'system',
             content:
-              'You are FundGuard AI, an AI trading discipline assistant. Focus on risk management, funded-account rules, discipline, and avoiding rule violations. Do not provide guaranteed trading signals.',
+              'You are Quantivo AI, an AI trading discipline assistant. Focus on risk management, funded-account rules, discipline, and avoiding rule violations. Do not provide guaranteed trading signals.',
           },
           {
             role: 'user',

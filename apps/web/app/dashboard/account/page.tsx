@@ -40,7 +40,7 @@ export default function AccountPage() {
         setUser(data);
       } catch (err) {
         console.error("Failed to load account:", err);
-        setError("Unable to connect to FundGuard AI API.");
+        setError("Unable to connect to Quantivo AI API.");
       } finally {
         setLoading(false);
       }
@@ -61,11 +61,11 @@ export default function AccountPage() {
 
         <div className="rounded-2xl border border-white/10 bg-[#111827] p-8 shadow-xl">
           <div className="mb-8">
-            <p className="text-sm font-medium text-emerald-400">FundGuard AI</p>
+            <p className="text-sm font-medium text-emerald-400">Quantivo AI</p>
 
             <h1 className="mt-1 text-3xl font-bold">Account</h1>
 
-            <p className="mt-2 text-gray-400">Manage your FundGuard AI account information.</p>
+            <p className="mt-2 text-gray-400">Manage your Quantivo AI account information.</p>
           </div>
 
           {loading && (
@@ -145,7 +145,7 @@ export default function AccountPage() {
                 <p className="font-semibold text-emerald-300">Account connected successfully</p>
 
                 <p className="mt-1 text-sm text-gray-400">
-                  Your FundGuard AI account is authenticated and connected to the backend.
+                  Your Quantivo AI account is authenticated and connected to the backend.
                 </p>
               </div>
             </div>

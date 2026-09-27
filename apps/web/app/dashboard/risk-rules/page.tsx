@@ -223,7 +223,7 @@ export default function RiskRulesPage() {
         {/* Header */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="mb-1 text-sm font-medium text-emerald-400">FundGuard AI</p>
+            <p className="mb-1 text-sm font-medium text-emerald-400">Quantivo AI</p>
 
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Risk Rules</h1>
 
@@ -267,7 +267,7 @@ export default function RiskRulesPage() {
             <h2 className="text-lg font-semibold">Your Risk Protection Rules</h2>
 
             <p className="mt-1 text-sm text-slate-400">
-              These rules are evaluated by the FundGuard AI risk engine.
+              These rules are evaluated by the Quantivo AI risk engine.
             </p>
           </div>
 

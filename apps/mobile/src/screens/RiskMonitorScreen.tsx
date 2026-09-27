@@ -26,7 +26,7 @@ export default function RiskMonitorScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Risk Monitor</Text>
-      <Text style={styles.subtitle}>FundGuard AI risk protection</Text>
+      <Text style={styles.subtitle}>Quantivo AI risk protection</Text>
 
       <View style={styles.statusCard}>
         <Text style={styles.statusLabel}>CURRENT RISK STATUS</Text>
@@ -66,7 +66,7 @@ export default function RiskMonitorScreen() {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Risk Per Trade</Text>
         <Text style={styles.value}>{riskPerTrade.toFixed(2)}%</Text>
-        <Text style={styles.limit}>FundGuard recommended maximum</Text>
+        <Text style={styles.limit}>Quantivo recommended maximum</Text>
       </View>
 
       <View style={styles.card}>
@@ -78,7 +78,7 @@ export default function RiskMonitorScreen() {
       <View style={styles.infoCard}>
         <Text style={styles.infoTitle}>Risk Protection</Text>
         <Text style={styles.infoText}>
-          FundGuard AI monitors your trading risk and helps prevent excessive daily losses and
+          Quantivo AI monitors your trading risk and helps prevent excessive daily losses and
           drawdown.
         </Text>
       </View>

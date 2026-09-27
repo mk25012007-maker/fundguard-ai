@@ -1,12 +1,50 @@
-import type { Metadata } from "next";
+"use client";
+import Script from "next/script";
+import { useState } from "react";
+import { createRazorpaySubscription } from "../../src/lib/api";
 
-export const metadata: Metadata = {
-  title: "Quantivo AI Pricing - Trading Risk Management Plans",
-  description:
-    "Explore Quantivo AI pricing plans for funded traders, including risk monitoring, trade tracking, analytics, AI insights, alerts, and trading discipline tools.",
-};
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 export default function PricingPage() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleUpgrade() {
+    try {
+      setLoading(true);
+
+      if (!window.Razorpay) {
+        throw new Error("Razorpay Checkout is not loaded.");
+      }
+
+      const subscription = await createRazorpaySubscription();
+
+      const razorpay = new window.Razorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        subscription_id: subscription.id,
+        name: "Quantivo AI",
+        description: "Quantivo AI Pro - ₹299/month",
+        handler: async function (response: any) {
+          console.log("Razorpay payment response:", response);
+          alert("Payment completed. Verification will be connected next.");
+        },
+        theme: {
+          color: "#10b981",
+        },
+      });
+
+      razorpay.open();
+    } catch (error) {
+      console.error("Upgrade failed:", error);
+      alert(error instanceof Error ? error.message : "Unable to start the Pro subscription.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-16 text-white">
       <div className="mx-auto max-w-6xl">
@@ -18,6 +56,7 @@ export default function PricingPage() {
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             Quantivo AI Pricing — Trading Risk Management Plans
           </h1>
+
           <p className="mt-5 text-lg text-slate-300">
             Start free and upgrade when you need the full Quantivo AI experience.
           </p>
@@ -79,12 +118,14 @@ export default function PricingPage() {
               <li>✓ Priority support</li>
             </ul>
 
-            <a
-              href="/register"
-              className="mt-8 block rounded-xl bg-emerald-500 px-5 py-3 text-center font-bold text-slate-950 transition hover:bg-emerald-400"
+            <button
+              type="button"
+              onClick={handleUpgrade}
+              disabled={loading}
+              className="mt-8 block w-full rounded-xl bg-emerald-500 px-5 py-3 text-center font-bold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Upgrade to Pro
-            </a>
+              {loading ? "Starting..." : "Upgrade to Pro"}
+            </button>
           </section>
         </div>
       </div>

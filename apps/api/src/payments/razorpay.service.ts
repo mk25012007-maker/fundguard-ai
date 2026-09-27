@@ -1,3 +1,4 @@
+import { PrismaService } from '../prisma/prisma.service';
 import {
   Injectable,
   InternalServerErrorException,
@@ -10,7 +11,7 @@ import * as crypto from 'crypto';
 export class RazorpayService {
   private readonly razorpay: Razorpay;
 
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
     const keyId = process.env.RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
@@ -26,7 +27,7 @@ export class RazorpayService {
     });
   }
 
-  async createSubscription() {
+  async createSubscription(userId: string) {
     const planId = process.env.RAZORPAY_PLAN_ID;
 
     if (!planId) {
@@ -43,6 +44,26 @@ export class RazorpayService {
       });
 
       console.log('[RAZORPAY] Subscription created:', subscription.id);
+
+      await this.prisma.subscriptions.upsert({
+        where: {
+          userId,
+        },
+        update: {
+          externalSubscriptionId: subscription.id,
+          status: 'TRIALING',
+          updatedAt: new Date(),
+        },
+        create: {
+          id: crypto.randomUUID(),
+          userId,
+          tier: 'FREE',
+          status: 'TRIALING',
+          externalSubscriptionId: subscription.id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
 
       return {
         id: subscription.id,
@@ -81,6 +102,18 @@ export class RazorpayService {
     if (expectedSignature !== data.razorpay_signature) {
       throw new UnauthorizedException('Invalid Razorpay payment signature');
     }
+
+    await this.prisma.subscriptions.update({
+      where: {
+        userId,
+      },
+      data: {
+        tier: 'PRO',
+        status: 'ACTIVE',
+        externalSubscriptionId: data.razorpay_subscription_id,
+        updatedAt: new Date(),
+      },
+    });
 
     return {
       success: true,
