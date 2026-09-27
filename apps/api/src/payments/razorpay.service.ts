@@ -33,17 +33,26 @@ export class RazorpayService {
       throw new InternalServerErrorException('Razorpay plan ID is missing');
     }
 
-    const subscription = await this.razorpay.subscriptions.create({
-      plan_id: planId,
-      total_count: 12,
-      customer_notify: 1,
-    });
+    console.log('[RAZORPAY] Creating subscription with configured plan');
 
-    return {
-      id: subscription.id,
-      status: subscription.status,
-      short_url: subscription.short_url,
-    };
+    try {
+      const subscription = await this.razorpay.subscriptions.create({
+        plan_id: planId,
+        total_count: 12,
+        customer_notify: 1,
+      });
+
+      console.log('[RAZORPAY] Subscription created:', subscription.id);
+
+      return {
+        id: subscription.id,
+        status: subscription.status,
+        short_url: subscription.short_url,
+      };
+    } catch (error) {
+      console.error('[RAZORPAY] Subscription creation failed:', error);
+      throw error;
+    }
   }
 
   async verifyPayment(
